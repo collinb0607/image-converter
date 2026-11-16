@@ -1,0 +1,17 @@
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.heic
+*.HEIC
+*.heif
+*.tif
+*.tiff
+*.bmp
+*.part
+!docs/*.gif
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
