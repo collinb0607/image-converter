@@ -185,7 +185,7 @@ def prepare_mode(im, fmt):
     """Convert to a pixel format the output can store. JPG has no transparency,
     so transparent areas are put on white instead of turning black."""
     if im.mode in ("I;16", "I;16B", "I;16L", "I", "F"):
-        # 16-bit or 32-bit greyscale: scale down to 8-bit (a plain convert would clip it to white).
+        # 16-bit or 32-bit grayscale: scale down to 8-bit (a plain convert would clip it to white).
         div = 256 if im.mode.startswith("I;16") else 1
         im = im.convert("I").point(lambda v: v / div).convert("L")
     has_alpha = im.mode in ("RGBA", "LA", "PA") or (im.mode == "P" and "transparency" in im.info)
@@ -251,7 +251,7 @@ def convert_image(src, s, check_cancel):
         before = im.mode
         im = prepare_mode(im, fmt)
         if before == "CMYK" or (before in ("1", "L", "LA") and im.mode not in ("1", "L", "LA")):
-            icc = None  # a CMYK or greyscale colour profile doesn't fit the RGB pixels they become
+            icc = None  # a CMYK or grayscale color profile doesn't fit the RGB pixels they become
         # Only metadata passed to save() below is written. Clear what Pillow
         # read, so nothing (like XMP, which can also hold GPS) slips through.
         im.info = {}
@@ -338,19 +338,19 @@ def fit_lossy(im, max_q, target, save):
 
 
 def fit_png(im, target, save):
-    """Fit a PNG under `target` bytes: lossless first, then 256 colours (like
+    """Fit a PNG under `target` bytes: lossless first, then 256 colors (like
     TinyPNG: usually looks the same for screenshots and graphics), then shrink.
     Returns (bytes, (w, h), notes)."""
     data = save(im)
     if len(data) <= target:
         return data, im.size, []
-    colours = im.mode in ("RGB", "RGBA")  # other modes have 256 colours or fewer already
+    colours = im.mode in ("RGB", "RGBA")  # other modes have 256 colors or fewer already
     if colours:
         data = save(quantize(im))
         if len(data) <= target:
-            return data, im.size, ["256 colours"]
+            return data, im.size, ["256 colors"]
     data, size = fit_by_shrinking(im, target, lambda img: save(quantize(img) if colours else img), len(data))
-    return data, size, (["256 colours"] if colours else []) + ["shrunk to fit"]
+    return data, size, (["256 colors"] if colours else []) + ["shrunk to fit"]
 
 
 def quantize(img):
@@ -403,7 +403,7 @@ def strip_metadata(data, fmt, exif):
 
 
 def _strip_jpeg(data, exif):
-    """Keep the JFIF header, colour profile, Adobe colour marker and tables;
+    """Keep the JFIF header, color profile, Adobe color marker and tables;
     drop EXIF, XMP, Photoshop/IPTC, comments and other APP segments, and
     anything after the end of the image (extra pictures, like a phone's
     depth map, can carry their own metadata)."""
@@ -452,7 +452,7 @@ def _strip_jpeg(data, exif):
 
 
 def _strip_png(data, exif):
-    """Keep the image and colour chunks; drop text (incl. XMP), EXIF and time chunks."""
+    """Keep the image and color chunks; drop text (incl. XMP), EXIF and time chunks."""
     import zlib
     if data[:8] != b"\x89PNG\r\n\x1a\n":
         return None
@@ -691,7 +691,7 @@ class ConverterApp:
                                     state="readonly", width=4)
         self.unit_cb.grid(row=3, column=3, sticky="w", **pad)
         self.limit_lbl = ttk.Label(f, text="Lowers the quality only as far as needed, then shrinks the image "
-                                           "if it still doesn't fit. PNG drops to 256 colours first.",
+                                           "if it still doesn't fit. PNG drops to 256 colors first.",
                                    foreground=MUTED, wraplength=600)
         self.limit_lbl.grid(row=4, column=0, columnspan=6, sticky="w", **pad)
 
@@ -701,7 +701,7 @@ class ConverterApp:
         self.gps_chk.grid(row=0, column=0, sticky="w", **pad)
         ttk.Checkbutton(f, text="Remove all other details too (camera, date taken, …)",
                         variable=self.v["strip_all"]).grid(row=0, column=1, sticky="w", **pad)
-        ttk.Label(f, text="Photos stay the right way up, and colours stay the same, either way.",
+        ttk.Label(f, text="Photos stay the right way up, and colors stay the same, either way.",
                   foreground=MUTED).grid(row=1, column=0, columnspan=2, sticky="w", **pad)
 
         f = ttk.LabelFrame(main, text="4. Save to", padding=8)
@@ -1061,7 +1061,7 @@ class ConverterApp:
                     results["done"] += 1
                     first_out = first_out or out
                 except Cancelled:
-                    status = "Cancelled"
+                    status = "Canceled"
                     results["cancelled"] += 1
                 except FitError as e:
                     status = f"Failed: {e}"
@@ -1084,7 +1084,7 @@ class ConverterApp:
         if r["failed"]:
             parts.append(f"{r['failed']} failed — see the list")
         if r["cancelled"]:
-            parts.append(f"{r['cancelled']} cancelled")
+            parts.append(f"{r['cancelled']} canceled")
         self.status.config(text=("Done! " if not (r["failed"] or r["cancelled"]) else "") +
                            ", ".join(parts) + ".")
         if first_out and self.v["reveal"].get() and not self.cancelled:
@@ -1171,7 +1171,7 @@ def support_link(parent, bg=None, font=None):
 
 # --------------------------------------------------------------------------- #
 #  The look (shared by the Offline Toolkit apps): white cards, a dark purple
-#  header fading to blue, blue actions. Only colours and fonts: no behaviour.
+#  header fading to blue, blue actions. Only colors and fonts: no behavior.
 # --------------------------------------------------------------------------- #
 THEME = dict(
     bg="#ffffff", card="#ffffff", border="#e2ddf0", text="#1c1433", muted="#6e6787", error="#c8364f",
@@ -1212,7 +1212,7 @@ def _indicator_image(root, kind, on, enabled, n=18, k=4):
         return (x - cx) ** 2 + (y - cy) ** 2 <= r * r
 
     def colour_at(x, y):
-        """The colour of one sample point, or None where it's see-through."""
+        """The color of one sample point, or None where it's see-through."""
         c = n / 2
         d = ((x - c) ** 2 + (y - c) ** 2) ** 0.5
         if kind == "check":
@@ -1256,7 +1256,7 @@ def _indicator_image(root, kind, on, enabled, n=18, k=4):
 
 
 def apply_theme(root):
-    """ttk's "clam" theme, recoloured (the native Windows and macOS themes ignore colours)."""
+    """ttk's "clam" theme, recoloured (the native Windows and macOS themes ignore colors)."""
     import tkinter.font as tkfont
     t, fam = THEME, ui_family()
     root.configure(bg=t["bg"])
@@ -1271,7 +1271,7 @@ def apply_theme(root):
     s.configure(".", background=t["bg"], foreground=t["text"], font=(fam, 10), bordercolor=t["border"],
                 focuscolor=t["blue"], lightcolor=t["card"], darkcolor=t["border"], troughcolor="#ece8f7")
     s.map(".", foreground=[("disabled", t["disabled"])])
-    s.map("TLabel", background=[("disabled", t["card"])])  # clam greys a disabled label's background
+    s.map("TLabel", background=[("disabled", t["card"])])  # clam grays a disabled label's background
     s.configure("TLabelframe", background=t["card"], bordercolor=t["border"], lightcolor=t["border"],
                 darkcolor=t["border"], relief="solid", borderwidth=1)
     s.configure("TLabelframe.Label", background=t["card"], foreground=t["purple2"], font=(fam, 11, "bold"))

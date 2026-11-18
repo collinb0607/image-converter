@@ -26,13 +26,13 @@ On an Intel Mac, or any other system, run it from source with Python (below).
 - **Compress to a size limit.** Set a limit like 500 KB or 2 MB and every image lands just under
   it. For JPG and WebP it lowers the quality only as far as needed; if even a low quality is too
   big, it keeps a decent quality and shrinks the image instead, to the largest size that fits.
-  PNG is lossless, so it first reduces the image to 256 colours (like TinyPNG: screenshots and
+  PNG is lossless, so it first reduces the image to 256 colors (like TinyPNG: screenshots and
   graphics usually look the same), then shrinks it if needed.
 - **Location removed.** Phones save where each photo was taken. That's removed by default, from
   the EXIF data and from XMP. Camera model and date taken stay, unless you also tick **Remove all
   other details**.
 - **Photos stay right.** Sideways phone photos are turned upright for real, so they still show
-  the right way round with the rotation tag gone. Colour profiles are kept, so colours don't shift.
+  the right way round with the rotation tag gone. Color profiles are kept, so colors don't shift.
 - **Never makes a file bigger for nothing.** If re-saving an image in its own format, at its own
   size, would make it larger (it was already well compressed), the original image data is kept
   and only its metadata is cleaned.
